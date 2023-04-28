@@ -360,6 +360,8 @@ bool MsckfVio::resetCallback(
 void MsckfVio::featureCallback(
     const CameraMeasurementConstPtr& msg) {
 
+  ROS_INFO("Start Process one batch!!!!");
+
   // Return if the gravity vector has not been set.
   if (!is_gravity_set) return;
 
@@ -405,6 +407,8 @@ void MsckfVio::featureCallback(
   pruneCamStateBuffer();
   double prune_cam_states_time = (
       ros::Time::now()-start_time).toSec();
+
+  
 
   // Publish the odometry.
   start_time = ros::Time::now();
@@ -1321,7 +1325,7 @@ void MsckfVio::onlineReset() {
       position_y_std < position_std_threshold &&
       position_z_std < position_std_threshold) return;
 
-  ROS_WARN("Start %lld online reset procedure...",
+  ROS_WARN("Start %lld ...",
       ++online_reset_counter);
   ROS_INFO("Stardard deviation in xyz: %f, %f, %f",
       position_x_std, position_y_std, position_z_std);
