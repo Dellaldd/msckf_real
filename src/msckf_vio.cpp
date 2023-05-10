@@ -241,7 +241,6 @@ void MsckfVio::imuCallback(
     initializeGravityAndBias();
     is_gravity_set = true;
   }
-
   return;
 }
 
@@ -360,8 +359,7 @@ bool MsckfVio::resetCallback(
 void MsckfVio::featureCallback(
     const CameraMeasurementConstPtr& msg) {
 
-  ROS_INFO("Start Process one batch!!!!");
-
+  
   // Return if the gravity vector has not been set.
   if (!is_gravity_set) return;
 
@@ -408,8 +406,6 @@ void MsckfVio::featureCallback(
   double prune_cam_states_time = (
       ros::Time::now()-start_time).toSec();
 
-  
-
   // Publish the odometry.
   start_time = ros::Time::now();
   publish(msg->header.stamp);
@@ -426,18 +422,10 @@ void MsckfVio::featureCallback(
     ++critical_time_cntr;
     ROS_INFO("\033[1;31mTotal processing time %f/%d...\033[0m",
         processing_time, critical_time_cntr);
-    //printf("IMU processing time: %f/%f\n",
-    //    imu_processing_time, imu_processing_time/processing_time);
-    //printf("State augmentation time: %f/%f\n",
-    //    state_augmentation_time, state_augmentation_time/processing_time);
-    //printf("Add observations time: %f/%f\n",
-    //    add_observations_time, add_observations_time/processing_time);
     printf("Remove lost features time: %f/%f\n",
         remove_lost_features_time, remove_lost_features_time/processing_time);
     printf("Remove camera states time: %f/%f\n",
         prune_cam_states_time, prune_cam_states_time/processing_time);
-    //printf("Publish time: %f/%f\n",
-    //    publish_time, publish_time/processing_time);
   }
 
   return;
@@ -456,10 +444,6 @@ void MsckfVio::mocapOdomCallback(
         msg->pose.pose.position, translation);
     tf::quaternionMsgToEigen(
         msg->pose.pose.orientation, orientation);
-    //tf::vectorMsgToEigen(
-    //    msg->transform.translation, translation);
-    //tf::quaternionMsgToEigen(
-    //    msg->transform.rotation, orientation);
     mocap_initial_frame.linear() = orientation.toRotationMatrix();
     mocap_initial_frame.translation() = translation;
     first_mocap_odom_msg = false;
@@ -987,6 +971,7 @@ void MsckfVio::measurementUpdate(
     smallAngleQuaternion(delta_x_imu.head<3>());
   state_server.imu_state.orientation = quaternionMultiplication(
       dq_imu, state_server.imu_state.orientation);
+
   state_server.imu_state.gyro_bias += delta_x_imu.segment<3>(3);
   state_server.imu_state.velocity += delta_x_imu.segment<3>(6);
   state_server.imu_state.acc_bias += delta_x_imu.segment<3>(9);

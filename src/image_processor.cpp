@@ -380,7 +380,6 @@ void ImageProcessor::initializeFirstFrame() {
       features_this_grid.back().lifetime = 1;
     }
   }
-
   return;
 }
 
@@ -1412,6 +1411,8 @@ void ImageProcessor::drawFeaturesStereo() {
         curr_cam0_points[feature.id] = feature.cam0_point;
         curr_cam1_points[feature.id] = feature.cam1_point;
       }
+
+    ROS_INFO("curr_cam0_points:%ld", curr_cam0_points.size());
 
     // Draw tracked features.
     for (const auto& id : prev_ids) {
